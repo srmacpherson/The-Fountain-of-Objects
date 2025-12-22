@@ -52,6 +52,8 @@ void DisplayIntro()
     Console.WriteLine("of the Fountain of Objects.");
     Console.WriteLine("Light is visible only in the entrance, and no other light is seen anywhere in the caverns.");
     Console.WriteLine("You must navigate the Caverns with your other senses.");
+    Console.WriteLine("Look out for pits. You will feel a breeze if a pit is in an adjacent room. If you");
+    Console.WriteLine("enter a room with a pit, you will die.");
     Console.WriteLine("Find the Fountain of Objects, activate it, and return to the entrance.");
 }
 
