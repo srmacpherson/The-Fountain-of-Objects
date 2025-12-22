@@ -4,7 +4,16 @@ Player player = new Player(start);
 Game game = new Game(player, map, false);
 game.Map.SetRoomTypeAtLocation(start, RoomType.Entrance);
 game.Map.SetRoomTypeAtLocation(new Location(3, 2), RoomType.Fountain);
+DisplayIntro();
 game.Run();
+void DisplayIntro()
+{
+    Console.WriteLine("You enter the Cavern of Objects, a maze of rooms, in search");
+    Console.WriteLine("of the Fountain of Objects.");
+    Console.WriteLine("Light is visible only in the entrance, and no other light is seen anywhere in the caverns.");
+    Console.WriteLine("You must navigate the Caverns with your other senses.");
+    Console.WriteLine("Find the Fountain of Objects, activate it, and return to the entrance.");
+}
 
 public class Game
 {
