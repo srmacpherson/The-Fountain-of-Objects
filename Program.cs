@@ -1,9 +1,43 @@
-﻿Map map = new Map(4, 4);
-Location start = new Location(0, 0);
-Player player = new Player(start);
-Game game = new Game(player, map, false);
-game.Map.SetRoomTypeAtLocation(start, RoomType.Entrance);
-game.Map.SetRoomTypeAtLocation(new Location(3, 2), RoomType.Fountain);
+﻿Map map;
+Location start;
+Player player;
+Game game;
+
+Console.WriteLine("Do you want to play on a 4x4, 6x6 or 8x8 map? (Type: 4, 6 or 8)...");
+string? mapSizeDecision = Console.ReadLine();
+if (mapSizeDecision == "4")
+{
+    map = new Map(4, 4);
+    start = new Location(0, 0);
+    player = new Player(start);
+    game = new Game(player, map, false);
+    game.Map.SetRoomTypeAtLocation(start, RoomType.Entrance);
+    game.Map.SetRoomTypeAtLocation(new Location(3, 2), RoomType.Fountain);
+}
+else if (mapSizeDecision == "6")
+{
+    map = new Map(6, 6);
+    start = new Location(0, 0);
+    player = new Player(start);
+    game = new Game(player, map, false);
+    game.Map.SetRoomTypeAtLocation(start, RoomType.Entrance);
+    game.Map.SetRoomTypeAtLocation(new Location(1, 5), RoomType.Fountain);
+}
+else if (mapSizeDecision == "8")
+{
+    map = new Map(8, 8);
+    start = new Location(0, 0);
+    player = new Player(start);
+    game = new Game(player, map, false);
+    game.Map.SetRoomTypeAtLocation(start, RoomType.Entrance);
+    game.Map.SetRoomTypeAtLocation(new Location(7, 2), RoomType.Fountain);
+}
+else
+{
+    Console.WriteLine("Invalid map size.");
+    return;
+}
+
 DisplayIntro();
 game.Run();
 void DisplayIntro()
@@ -61,14 +95,14 @@ public class Game
     {
         while (true)
         {
-            Console.WriteLine("What do you want to do: (move north, move east, move south, move west, activate fountain)?");
+            Console.WriteLine("What do you want to do (Type: 'n', 'e', 's', 'w' or 'a')?");
             string? input = Console.ReadLine();
 
-            if (input == "move north") return new MoveCommand(Direction.North);
-            if (input == "move east") return new MoveCommand(Direction.East);
-            if (input == "move south") return new MoveCommand(Direction.South);
-            if (input == "move west") return new MoveCommand(Direction.West);
-            if (input == "activate fountain") return new ActivateFountainCommand();
+            if (input == "n") return new MoveCommand(Direction.North);
+            if (input == "e") return new MoveCommand(Direction.East);
+            if (input == "s") return new MoveCommand(Direction.South);
+            if (input == "w") return new MoveCommand(Direction.West);
+            if (input == "a") return new ActivateFountainCommand();
             else Console.WriteLine($"I did not understand '{input}'.");
         }
     }
