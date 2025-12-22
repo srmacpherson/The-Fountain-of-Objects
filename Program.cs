@@ -13,6 +13,7 @@ if (mapSizeDecision == "4")
     game = new Game(player, map, false);
     game.Map.SetRoomTypeAtLocation(start, RoomType.Entrance);
     game.Map.SetRoomTypeAtLocation(new Location(3, 2), RoomType.Fountain);
+    game.Map.SetRoomTypeAtLocation(new Location(3, 0), RoomType.Pit);
 }
 else if (mapSizeDecision == "6")
 {
@@ -22,6 +23,8 @@ else if (mapSizeDecision == "6")
     game = new Game(player, map, false);
     game.Map.SetRoomTypeAtLocation(start, RoomType.Entrance);
     game.Map.SetRoomTypeAtLocation(new Location(1, 5), RoomType.Fountain);
+    game.Map.SetRoomTypeAtLocation(new Location(4, 0), RoomType.Pit);
+    game.Map.SetRoomTypeAtLocation(new Location(1, 3), RoomType.Pit);
 }
 else if (mapSizeDecision == "8")
 {
@@ -31,6 +34,9 @@ else if (mapSizeDecision == "8")
     game = new Game(player, map, false);
     game.Map.SetRoomTypeAtLocation(start, RoomType.Entrance);
     game.Map.SetRoomTypeAtLocation(new Location(7, 2), RoomType.Fountain);
+    game.Map.SetRoomTypeAtLocation(new Location(4, 0), RoomType.Pit);
+    game.Map.SetRoomTypeAtLocation(new Location(7, 4), RoomType.Pit);
+    game.Map.SetRoomTypeAtLocation(new Location(3, 5), RoomType.Pit);
 }
 else
 {
@@ -64,20 +70,27 @@ public class Game
         Senses = new ISense[]
             {
                 new EntranceSense(),
-                new FountainSense()
+                new FountainSense(),
+                new PitSense()
             };
     }
     public RoomType CurrentRoom => Map.GetRoomTypeAtLocation(Player.Location);
     public bool HasWon => CurrentRoom == RoomType.Entrance && IsFountainOn;
-    public void Run()
+    public void Run() 
     {
-        while (!HasWon)
+        while (!HasWon && Player.IsAlive)
         {
             DisplayStatus();
             ICommand command = GetCommand();
             command.Execute(this);
+
+            if (CurrentRoom == RoomType.Pit)
+            {
+                Player.IsAlive = false;
+                Console.WriteLine("You fell into a pit. Game Over.");
+            }
         }
-        Console.WriteLine("Congratulations! The Foutain of Objects has been reactivated and you have escaped with your life!");
+        if (HasWon) Console.WriteLine("Congratulations! The Foutain of Objects has been reactivated and you have escaped with your life!");
     }
     private void DisplayStatus()
     {
@@ -111,10 +124,12 @@ public class Game
 public class Player
 {
     public Location Location { get; set; }
+    public bool IsAlive { get; set; }
 
     public Player(Location start)
     {
         Location = start;
+        IsAlive = true;
     }
     public void GetLocation()
     {
@@ -227,8 +242,8 @@ public class EntranceSense : ISense
 {
     public bool CanSense(Game game)
     {
-        RoomType PlayerLocation = game.Map.GetRoomTypeAtLocation(game.Player.Location);
-        if (PlayerLocation == RoomType.Entrance)
+        RoomType playerLocation = game.Map.GetRoomTypeAtLocation(game.Player.Location);
+        if (playerLocation == RoomType.Entrance)
         {
             return true;
         }
@@ -243,8 +258,8 @@ public class FountainSense : ISense
 {
     public bool CanSense(Game game) 
     {
-        RoomType PlayerLocation = game.Map.GetRoomTypeAtLocation(game.Player.Location);
-        if (PlayerLocation == RoomType.Fountain)
+        RoomType playerLocation = game.Map.GetRoomTypeAtLocation(game.Player.Location);
+        if (playerLocation == RoomType.Fountain)
         {
             return true;
         }
@@ -262,8 +277,40 @@ public class FountainSense : ISense
         }
     }
 }
+public class PitSense : ISense
+{
+    public bool CanSense(Game game)
+    {
+        Location playerLocation = game.Player.Location;
+        RoomType[] adjRooms =
+            {
+            game.Map.GetRoomTypeAtLocation(new Location(playerLocation.row + 1, playerLocation.column + 1)),
+            game.Map.GetRoomTypeAtLocation(new Location(playerLocation.row + 1, playerLocation.column)),
+            game.Map.GetRoomTypeAtLocation(new Location(playerLocation.row + 1, playerLocation.column - 1)),
+            game.Map.GetRoomTypeAtLocation(new Location(playerLocation.row, playerLocation.column + 1)),
+            game.Map.GetRoomTypeAtLocation(new Location(playerLocation.row, playerLocation.column - 1)),
+            game.Map.GetRoomTypeAtLocation(new Location(playerLocation.row - 1, playerLocation.column + 1)),
+            game.Map.GetRoomTypeAtLocation(new Location(playerLocation.row - 1, playerLocation.column)),
+            game.Map.GetRoomTypeAtLocation(new Location(playerLocation.row - 1, playerLocation.column - 1))
+        };
+        
+        foreach (RoomType room in adjRooms)
+        {
+            if (room == RoomType.Pit)
+            {
+                return true;
+            }
+        }
+        return false;
+        
+    }
+    public void DisplaySense(Game game)
+    {
+        Console.WriteLine("You feel a draft. There is a pit in a nearby room.");
+    }
+}
 
 public record Location(int row, int column);
 
 public enum Direction { North, South, West, East }
-public enum RoomType { Normal, Entrance, Fountain, OffTheMap }
+public enum RoomType { Normal, Entrance, Fountain, OffTheMap, Pit }
