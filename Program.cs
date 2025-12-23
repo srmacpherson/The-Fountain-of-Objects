@@ -63,6 +63,7 @@ public class Game
     public Map Map { get; set; }
     public bool IsFountainOn { get; set; }
     private readonly ISense[] Senses;
+    private DateTime StartTime;
 
     public Game(Player player,  Map map,  bool isFountainOn)
     {
@@ -75,6 +76,7 @@ public class Game
                 new FountainSense(),
                 new PitSense()
             };
+        StartTime = DateTime.Now;
     }
     public RoomType CurrentRoom => Map.GetRoomTypeAtLocation(Player.Location);
     public bool HasWon => CurrentRoom == RoomType.Entrance && IsFountainOn;
@@ -90,9 +92,20 @@ public class Game
             {
                 Player.IsAlive = false;
                 Console.WriteLine("You fell into a pit. Game Over.");
+                DateTime endTime = DateTime.Now;
+                TimeSpan timeSpent = endTime - StartTime;
+                int totalSeconds = (int)Math.Floor(timeSpent.TotalSeconds);
+                Console.WriteLine($"You spent ${totalSeconds} seconds.");
             }
         }
-        if (HasWon) Console.WriteLine("Congratulations! The Foutain of Objects has been reactivated and you have escaped with your life!");
+        if (HasWon)
+        {
+            Console.WriteLine("Congratulations! The Foutain of Objects has been reactivated and you have escaped with your life!");
+            DateTime endTime = DateTime.Now;
+            TimeSpan timeSpent = endTime - StartTime;
+            int totalSeconds = (int)Math.Floor(timeSpent.TotalSeconds);
+            Console.WriteLine($"You spent ${totalSeconds} seconds.");
+        }
     }
     private void DisplayStatus()
     {
